@@ -2,7 +2,7 @@
 #-*- coding: UTF-8 -*-
 from sys import argv
 import telebot
-from config import token
+from config import token, receiver
 
 bot = telebot.TeleBot(token) #smbot
 
@@ -14,4 +14,4 @@ while i < len(script):
     i+=1
 
 if com != '':
-    bot.send_message(1183409538, com)
+    bot.send_message(receiver, com)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import telebot, os
 from datetime import datetime
-from config import token
+from config import token, receiver
 
 bot = telebot.TeleBot(token)   #smbot
 filename = "complete.txt"
@@ -18,8 +18,8 @@ def send_news():
     if diff_in_minutes < 2:
         #print('новый файл')
         docu = open(filename, 'rb')
-        bot.send_message(1183409538, f'🤖 Для вас новый файл:')
-        bot.send_document(1183409538, docu)
+        bot.send_message(receiver, f'🤖 Для вас новый файл:')
+        bot.send_document(receiver, docu)
     else:
         return
 if isExisting :
