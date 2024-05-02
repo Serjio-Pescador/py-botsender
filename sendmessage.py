@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 import telebot, os
 from datetime import datetime
-from config.py import token
+from config import token
 
 bot = telebot.TeleBot(token)   #smbot
+filename = "complete.txt"
+isExisting = os.path.exists(filename)
 
 #рассылка бота мне сообщения, при обновлении файла
 def send_news():
-    filename = "complete.txt"
     mtime = os.path.getmtime(filename)
     mtime_readable = datetime.fromtimestamp(mtime)
     delta_new = datetime.now() - mtime_readable
@@ -21,5 +22,5 @@ def send_news():
         bot.send_document(1183409538, docu)
     else:
         return
-
-send_news()
+if isExisting :
+    send_news()
