@@ -1,0 +1,65 @@
+name: 🤖 run telebot
+
+on:
+  workflow_dispatch:
+
+jobs:  
+  dep1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run FAILING script
+        run: echo Success
+          
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+       
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        git clone https://github.com/Serjio-Pescador/py-botsender.git
+        cd py-botsender
+        echo 'token = "${{ secrets.SMBOT_TOKEN }}"' > config.py
+        echo 'receiver = "${{ secrets.SMBOT_GROUP }}"' >> config.py
+        touch complete.txt
+        echo "SUCCESS!!!" > complete.txt
+        echo "Who's run: ${{ github.actor }}" >> complete.txt
+        echo "Repo: ${{ github.repository }}" >> complete.txt
+        echo "Launch branch: ${{ github.ref_name }}" >> complete.txt
+        echo "Run's number: ${{ github.run_number }}" >> complete.txt
+        echo "Name of workflow: ${{ github.workflow }}" >> complete.txt
+        python sendmessage.py
+        python argv.py "🎉 SUCCESS! ${{ github.workflow }}"
+
+  checksuccess:
+    runs-on: ubuntu-latest
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+    needs: [dep1, build]
+    steps:
+      - name: Hello World        
+        env:
+          NEEDS: ${{ toJSON(needs) }}     
+        run: |
+          echo "$NEEDS"
+        
+  nextjob:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [checksuccess]
+    steps:
+      - name: 🎉 Full Success       
+        env:
+          NEEDS: ${{ toJSON(needs) }}     
+        run: |
+          echo "$NEEDS"
